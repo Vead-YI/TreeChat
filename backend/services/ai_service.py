@@ -1,6 +1,6 @@
 """
 TreeChat - AI 服务
-处理与 OpenAI API 的交互
+处理与 DeepSeek API 的交互
 """
 
 import os
@@ -10,8 +10,11 @@ from openai import AsyncOpenAI
 
 from ..models.models import ContextMode, ConversationTree, MessageNode, build_context_messages
 
-# 初始化 OpenAI 客户端
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# 初始化 DeepSeek 客户端
+client = AsyncOpenAI(
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com"
+)
 
 
 async def generate_completion(
@@ -60,7 +63,7 @@ async def generate_completion(
     
     # 调用 API
     response = await client.chat.completions.create(
-        model="gpt-4o-mini",  # 使用 Mini 版本节省成本
+        model="deepseek-chat",  # DeepSeek 模型
         messages=messages,
         temperature=0.7,
         max_tokens=2000,
@@ -108,7 +111,7 @@ async def generate_summary(
 """
     
     response = await client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="deepseek-chat",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=200,
         temperature=0.3,
@@ -143,7 +146,7 @@ async def generate_title(
 ---"""
     
     response = await client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="deepseek-chat",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=50,
         temperature=0.5,

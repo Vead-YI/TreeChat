@@ -43,18 +43,21 @@ def init_database():
         
         # 创建索引
         db.execute("CREATE INDEX IF NOT EXISTS idx_trees_created ON trees(created_at)")
-        
-        db.commit()
+        # with 块退出时自动 commit，不需要手动调用
 
 
 @contextmanager
 def get_db():
-    """获取数据库连接"""
+    """获取数据库连接，yield cursor，自动 commit"""
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
     try:
-        yield conn.cursor()
+        yield cursor
         conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
     finally:
         conn.close()
 
