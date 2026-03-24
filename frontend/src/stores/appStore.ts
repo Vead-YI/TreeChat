@@ -72,6 +72,7 @@ interface AppState {
   createBranch: (title: string, contextMode?: ContextMode) => Promise<void>
   switchNode: (nodeId: string) => void
   updateNode: (nodeId: string, updates: Partial<MessageNode>) => void
+  deleteNode: (treeId: string, nodeId: string) => Promise<void>
 }
 
 // ============ API 函数 ============
@@ -277,6 +278,19 @@ export const useStore = create<AppState>((set, get) => ({
         },
       },
     })
+  },
+  
+  // 删除节点
+  deleteNode: async (treeId: string, nodeId: string) => {
+    try {
+      await apiRequest(`/trees/${treeId}/nodes/${nodeId}`, { method: 'DELETE' })
+      
+      // 重新加载树
+      const tree = await apiRequest<ConversationTree>(`/trees/${treeId}`)
+      set({ currentTree: tree })
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : '删除失败' })
+    }
   },
 }))
 

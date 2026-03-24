@@ -109,6 +109,9 @@ class ConversationTree(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
+    # 标签
+    tags: List[str] = Field(default_factory=list, description="标签列表")
+    
     # 配置
     default_context_mode: ContextMode = Field(default=ContextMode.FULL)
     

@@ -10,21 +10,25 @@ import {
 } from 'lucide-react'
 
 function TreeNode({ nodeId, level = 0 }: { nodeId: string; level?: number }) {
-  const { currentTree, switchNode } = useStore()
+  const { currentTree, switchNode, deleteNode: deleteNodeFromStore } = useStore()
   const [expanded, setExpanded] = useState(true)
-  const [showMenu, setShowMenu] = useState(false)
   
   if (!currentTree || !currentTree.nodes[nodeId]) return null
   
   const node = currentTree.nodes[nodeId]
   const isActive = currentTree.active_node_id === nodeId
   const hasChildren = node.children.length > 0
-  const isRoot = !node.parent_id
   
   // 获取节点显示文本
   const displayText = node.summary 
     ? node.summary.slice(0, 30) + (node.summary.length > 30 ? '...' : '')
     : node.content.slice(0, 40) + (node.content.length > 40 ? '...' : '')
+  
+  const handleDelete = async () => {
+    if (confirm(`确定要删除「${displayText}」吗？所有子节点也会被删除。`)) {
+      await deleteNodeFromStore(currentTree.id, nodeId)
+    }
+  }
   
   return (
     <div className="select-none">
@@ -40,10 +44,6 @@ function TreeNode({ nodeId, level = 0 }: { nodeId: string; level?: number }) {
         `}
         style={{ paddingLeft: `${level * 16 + 8}px` }}
         onClick={() => switchNode(nodeId)}
-        onContextMenu={(e) => {
-          e.preventDefault()
-          setShowMenu(true)
-        }}
       >
         {/* 展开/折叠按钮 */}
         <button
@@ -69,21 +69,11 @@ function TreeNode({ nodeId, level = 0 }: { nodeId: string; level?: number }) {
         {/* 操作按钮 */}
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5">
           <button
-            className="p-1 hover:bg-white/10 rounded"
-            title="添加分支"
-            onClick={(e) => {
-              e.stopPropagation()
-              // TODO: 打开创建分支弹窗
-            }}
-          >
-            <GitBranch size={12} />
-          </button>
-          <button
-            className="p-1 hover:bg-white/10 rounded text-red-400"
+            className="p-1 hover:bg-white/10 rounded text-red-400 hover:text-red-300"
             title="删除"
             onClick={(e) => {
               e.stopPropagation()
-              // TODO: 删除节点
+              handleDelete()
             }}
           >
             <Trash2 size={12} />

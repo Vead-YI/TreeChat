@@ -16,10 +16,10 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# CORS 配置
+# CORS 配置 - 必须在最前面
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["*"],  # 允许所有来源（开发环境）
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,6 +44,7 @@ async def root():
 async def startup():
     print("🌲 TreeChat API 启动中...")
     print("📖 文档地址: http://localhost:8000/docs")
+    print("✅ CORS 已启用")
 
 
 @app.on_event("shutdown")
