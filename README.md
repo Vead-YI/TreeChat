@@ -1,4 +1,4 @@
-# 🌲 言枢
+# 🌲 TreeChat
 
 <div align="center">
 
